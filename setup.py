@@ -10,7 +10,7 @@ config = {
     'download_url': 'https://github.com/tedivm/screeps-api/releases',
     'author_email': 'tedivm@tedivm.com',
     'version': '0.1',
-    'install_requires': ['nose'],
+    'install_requires': ['nose', 'requires'],
     'packages': ['screeps'],
     'scripts': [],
     'name': 'screeps'
