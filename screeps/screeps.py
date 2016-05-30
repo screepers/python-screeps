@@ -42,6 +42,9 @@ class ScreepsConnection(object):
 
     def overview(self, interval=8, statName='energyHarvested'):
         return self.get('user/overview', interval=interval, statName=statName)
+        
+    def stats(self,id,interval=8):
+        return self.get('user/stats',id=id,interval=interval)
 
     def user_find(self, username):
         return self.get('user/find', username=username)
