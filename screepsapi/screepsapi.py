@@ -173,7 +173,12 @@ class Socket(object):
         me = screepsConnection.me()
         self.user_id = me['_id']
         ws.send('auth ' + screepsConnection.token)
-        ws.send('gzip on')
+
+    def gzip(enable):
+        if enable:
+            ws.send('gzip on')
+        else:
+            ws.send('gzip off')
 
     def subscribe_user(self, watchpoint):
         self.subscribe('user:' + self.user_id + '/' + watchpoint)
@@ -185,13 +190,20 @@ class Socket(object):
         pass
 
     def process_log(self, ws, message):
-        print message
+        pass
 
     def process_results(self, ws, message):
-        print message
+        pass
 
     def process_error(self, ws, message):
-        print message
+        pass
+
+    def process_cpu(self, ws, data):
+        pass
+
+    def process_rawdata(self, ws, data):
+        pass
+
 
     def on_message(self, ws, message):
         if (message.startswith('auth ok')):
@@ -205,26 +217,37 @@ class Socket(object):
             gzipFile = GzipFile(fileobj=StringIO(b64decode(message[3:])))
             message = gzipFile.read()
 
-        data = json.loads(message)
-
-
         try:
             self.process_message(ws, message)
             return
         except AttributeError:
-            if 'messages' in data[1]:
-                stream = []
 
-                if 'log' in data[1]['messages']:
-                    for line in data[1]['messages']['log']:
-                        self.process_log(ws, line)
+            try:
+                data = json.loads(message)
+            except:
+                return
 
-                if 'results' in data[1]['messages']:
-                    for line in data[1]['messages']['log']:
-                        self.process_results(ws, line)
+            if data[0].endswith('console'):
 
-            if 'error' in data[1]:
-                self.process_error(data[1]['error'])
+                if 'messages' in data[1]:
+                    stream = []
+
+                    if 'log' in data[1]['messages']:
+                        for line in data[1]['messages']['log']:
+                            self.process_log(ws, line)
+
+                    if 'results' in data[1]['messages']:
+                        for line in data[1]['messages']['log']:
+                            self.process_results(ws, line)
+
+                if 'error' in data[1]:
+                    self.process_error(data[1]['error'])
+
+
+            if data[0].endswith('cpu'):
+                self.process_cpu(ws, data[1])
+
+            self.process_rawdata(ws, data)
 
     def connect(self):
         if self.logging:
