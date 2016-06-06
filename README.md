@@ -1,1 +1,1 @@
-# screeps-api
+# screepsapi
