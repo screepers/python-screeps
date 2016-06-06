@@ -2,19 +2,22 @@
 # Copyright @dzhu
 # https://gist.github.com/dzhu/d6999d126d0182973b5c
 
-import json
-
 from base64 import b64decode
 from collections import OrderedDict
 from cStringIO import StringIO
 from gzip import GzipFile
-
+import json
+import logging
 import requests
+from StringIO import StringIO
+import sys
+import websocket
+
 
 ## Python before 2.7.10 or so has somewhat broken SSL support that throws a warning; suppress it
 import warnings; warnings.filterwarnings('ignore', message='.*true sslcontext object.*')
 
-class ScreepsConnection(object):
+class API(object):
     def req(self, func, path, **args):
         r = func(self.prefix + path, headers={'X-Token': self.token, 'X-Username': self.token}, **args)
         self.token = r.headers.get('X-Token', self.token)
@@ -145,3 +148,112 @@ class ScreepsConnection(object):
     def activate_ptr(self):
         if self.ptr:
             return self.post('user/activate-ptr')
+
+
+class Socket(object):
+
+    def __init__(self, user, password, ptr=False, logging=False):
+        self.settings = {}
+        self.user = user
+        self.password = password
+        self.ptr = ptr
+        self.logging = False
+
+    def on_error(self, ws, error):
+        print error
+
+    def on_close(self, ws):
+        self.disconnect()
+
+    def on_open(self, ws):
+        screepsConnection = API(u=self.user,p=self.password,ptr=self.ptr)
+        me = screepsConnection.me()
+        self.user_id = me['_id']
+        ws.send('auth ' + screepsConnection.token)
+        ws.send('gzip on')
+
+    def subscribe_user(self, watchpoint):
+        self.subscribe('user:' + self.user_id + '/' + watchpoint)
+
+    def subscribe(self, watchpoint):
+        self.ws.send('subscribe ' + watchpoint)
+
+    def set_subscriptions(self):
+        pass
+
+    def process_log(self, ws, message):
+        print message
+
+    def process_results(self, ws, message):
+        print message
+
+    def process_error(self, ws, message):
+        print message
+
+    def on_message(self, ws, message):
+        if (message.startswith('auth ok')):
+            self.set_subscriptions()
+            return
+
+        if (message.startswith('time')):
+            return
+
+        if (message.startswith('gz')):
+            gzipFile = GzipFile(fileobj=StringIO(b64decode(message[3:])))
+            message = gzipFile.read()
+
+        data = json.loads(message)
+
+
+        try:
+            self.process_message(ws, message)
+            return
+        except AttributeError:
+            if 'messages' in data[1]:
+                stream = []
+
+                if 'log' in data[1]['messages']:
+                    for line in data[1]['messages']['log']:
+                        self.process_log(ws, line)
+
+                if 'results' in data[1]['messages']:
+                    for line in data[1]['messages']['log']:
+                        self.process_results(ws, line)
+
+            if 'error' in data[1]:
+                self.process_error(data[1]['error'])
+
+    def connect(self):
+        if self.logging:
+            logging.getLogger('websocket').addHandler(logging.StreamHandler())
+            websocket.enableTrace(True)
+        else:
+            logging.getLogger('websocket').addHandler(logging.NullHandler())
+            websocket.enableTrace(False)
+
+        if not self.ptr:
+            url = 'wss://screeps.com/socket/websocket'
+        else:
+            url = 'wss://screeps.com/ptr/socket/websocket'
+
+        self.ws = websocket.WebSocketApp(url=url,
+                                    on_message=self.on_message,
+                                    on_error=self.on_error,
+                                    on_close=self.on_close,
+                                    on_open=self.on_open)
+
+        if 'http_proxy' in self.settings and self.settings['http_proxy'] is not None:
+            http_proxy_port = self.settings['http_proxy_port'] if 'http_proxy_port' in self.settings else 8080
+            self.ws.run_forever(http_proxy_host=self.settings['http_proxy'], http_proxy_port=http_proxy_port, ping_interval=1)
+        else:
+            self.ws.run_forever(ping_interval=1)
+
+
+    def disconnect(self):
+        if self.ws:
+            self.ws.close()
+            self.ws = false
+
+
+    def start(self):
+        self.connect()
