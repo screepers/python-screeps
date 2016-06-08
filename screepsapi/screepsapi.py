@@ -237,7 +237,7 @@ class Socket(object):
                             self.process_log(ws, line)
 
                     if 'results' in data[1]['messages']:
-                        for line in data[1]['messages']['log']:
+                        for line in data[1]['messages']['results']:
                             self.process_results(ws, line)
 
                 if 'error' in data[1]:
