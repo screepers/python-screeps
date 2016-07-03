@@ -1,5 +1,4 @@
-
-# Copyright @dzhu
+# Copyright @dzhu, @tedivm
 # https://gist.github.com/dzhu/d6999d126d0182973b5c
 
 from base64 import b64decode
@@ -12,6 +11,7 @@ import requests
 from StringIO import StringIO
 import sys
 import websocket
+import zlib
 
 
 ## Python before 2.7.10 or so has somewhat broken SSL support that throws a warning; suppress it
@@ -214,8 +214,7 @@ class Socket(object):
             return
 
         if (message.startswith('gz')):
-            gzipFile = GzipFile(fileobj=StringIO(b64decode(message[3:])))
-            message = gzipFile.read()
+            message = zlib.decompress(b64decode(message[3:]), 0)
 
         try:
             self.process_message(ws, message)
