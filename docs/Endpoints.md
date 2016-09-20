@@ -47,6 +47,30 @@ are the ones listed below.
     - `status` can at least be "normal" or "out of borders"
     - if the room is in a novice area, `novice` will contain the Unix timestamp of the end of the protection (otherwise it is absent)
 
+# Market information
+
+- `https://screeps.com/api/game/market/orders-index`
+  - `{"ok":1,"list":[{"_id":"XUHO2","count":2}]}`
+  - `_id` is the resource type, and there will only be one of each type.
+  - `count` is the number of orders.
+
+  - `https://screeps.com/api/game/market/my-orders`
+    - `{ ok, list: [ { _id, created, user, active, type, amount, remainingAmount, resourceType, price, totalAmount, roomName } ] }`
+
+  - `https://screeps.com/api/game/market/orders?resourceType=Z`
+    - `{ ok, list: [ { _id, created, user, active, type, amount, remainingAmount, resourceType, price, totalAmount, roomName } ] }`
+    - `resourceType` is one of the RESOURCE_* constants.
+
+  - `https://screeps.com/api/user/money-history`
+    - `{"ok":1,"page":0,"list":[ { _id, date, tick, user, type, balance, change, market: {} } ] }`
+    - `page` used for pagination.
+    - `hasMore` is true if there are more pages to view.
+    - `market`
+      - New Order- `{ order: { type, resourceType, price, totalAmount, roomName } }`
+      - Extended Order- `{ extendOrder: { orderId, addAmount } }`
+      - Fulfilled Order- `{ resourceType, roomName, targetRoomName, price, npc, amount }`
+      - Price Change - `{ changeOrderPrice: { orderId, oldPrice, newPrice } }`
+
 # Leaderboard
 - `https://screeps.com/api/leaderboard/seasons`
     - `{ ok, seasons: [ { _id, name, date } ] }`
