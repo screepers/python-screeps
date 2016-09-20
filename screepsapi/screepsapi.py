@@ -77,6 +77,21 @@ class API(object):
         return self.get('game/room-status', room=room)
 
 
+    #### market info methods
+
+    def orders_index(self):
+        return self.get('game/market/orders-index')
+
+    def my_orders(self):
+        return self.get('game/market/my-orders')
+
+    def market_order_by_type(self, resourceType):
+        return self.get('game/market/orders', resourceType=resourceType)
+
+    def market_history(self):
+        return self.get('user/money-history')
+
+
     #### leaderboard methods
 
     ## omit season to get current season
