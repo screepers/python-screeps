@@ -255,8 +255,7 @@ class Socket(object):
                             self.process_results(ws, line)
 
                 if 'error' in data[1]:
-                    self.process_error(data[1]['error'])
-
+                    self.process_error(ws, data[1]['error'])
 
             if data[0].endswith('cpu'):
                 self.process_cpu(ws, data[1])
