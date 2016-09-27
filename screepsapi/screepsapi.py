@@ -52,6 +52,9 @@ class API(object):
     def user_find(self, username):
         return self.get('user/find', username=username)
 
+    def user_rooms(self, userid):
+        return self.get('user/rooms', id=userid)
+
     def memory(self, path=''):
         ret = self.get('user/memory', path=path)
         if 'data' in ret:
