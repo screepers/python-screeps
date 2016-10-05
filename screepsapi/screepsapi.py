@@ -3,12 +3,15 @@
 
 from base64 import b64decode
 from collections import OrderedDict
-from cStringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 from gzip import GzipFile
 import json
 import logging
 import requests
-from StringIO import StringIO
 import sys
 import websocket
 import zlib
@@ -24,7 +27,7 @@ class API(object):
         try:
             return json.loads(r.text, object_pairs_hook=OrderedDict)
         except ValueError:
-            print 'JSON failure:', r.text
+            print ('JSON failure:', r.text)
         return None
 
     def get(self, _path, **args): return self.req(requests.get, _path, params=args)
@@ -181,7 +184,7 @@ class Socket(object):
         self.logging = False
 
     def on_error(self, ws, error):
-        print error
+        print (error)
 
     def on_close(self, ws):
         self.disconnect()
