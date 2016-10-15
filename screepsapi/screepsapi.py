@@ -158,6 +158,19 @@ class API(object):
         return self.post('game/create-construction', structureType=typ, room=room, x=x, y=y)
 
 
+    #### battle info methods
+
+    def battles(self, interval=None, sinceTick=None):
+        if sinceTick is not None:
+            return self.get('experimental/pvp', sinceTick=sinceTick)
+        if interval is not None:
+            return self.get('experimental/pvp', interval=interval)
+        return False
+
+    def nukes(self):
+        return self.get('experimental/nukes')
+
+
     #### other methods
 
     def time(self):
