@@ -52,8 +52,12 @@ class API(object):
     def stats(self,id,interval=8):
         return self.get('user/stats',id=id,interval=interval)
 
-    def user_find(self, username):
-        return self.get('user/find', username=username)
+    def user_find(self, username=None, user_id=None):
+        if username is not None:
+            return self.get('user/find', username=username)
+        if user_id is not None:
+            return self.get('user/find', id=user_id)
+        return False
 
     def user_rooms(self, userid):
         return self.get('user/rooms', id=userid)

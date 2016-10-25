@@ -110,6 +110,9 @@ are the ones listed below.
 - `https://screeps.com/api/user/find?username=danny`
     - `{ ok, user: { _id, username, badge: { type, color1, color2, color3, param, flip }, gcl } }`
 
+- `https://screeps.com/api/user/find?id=55c91dc66e36d62a6167e1b5`
+    - `{ ok, user: { _id, username, badge: { type, color1, color2, color3, param, flip }, gcl } }`
+
 - `https://screeps.com/api/user/overview?interval=1440&statName=energyControl`
     - `{ ok, rooms: [ <room name> ], stats: { <room name>: [ { value, endTime } ] }, statsMax }`
 
