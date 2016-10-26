@@ -164,9 +164,9 @@ class API(object):
 
     #### battle info methods
 
-    def battles(self, interval=None, sinceTick=None):
+    def battles(self, interval=None, start=None):
         if sinceTick is not None:
-            return self.get('experimental/pvp', sinceTick=sinceTick)
+            return self.get('experimental/pvp', start=start)
         if interval is not None:
             return self.get('experimental/pvp', interval=interval)
         return False
