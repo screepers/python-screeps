@@ -37,10 +37,11 @@ class API(object):
         self.ptr = ptr
         self.host = host
         self.secure = secure
-        self.prefix = 'https://screeps.com/ptr/api/' if ptr else 'https://screeps.com/api/'
         if host is not None:
             self.prefix = 'https://' if secure else 'http://'
             self.prefix += host + '/api/'
+        else:
+            self.prefix = 'https://screeps.com/ptr/api/' if ptr else 'https://screeps.com/api/'
 
         self.token = None
         if u is not None and p is not None:
