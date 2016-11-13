@@ -33,9 +33,16 @@ class API(object):
     def get(self, _path, **args): return self.req(requests.get, _path, params=args)
     def post(self, _path, **args): return self.req(requests.post, _path, json=args)
 
-    def __init__(self, u=None, p=None, ptr=False):
+    def __init__(self, u=None, p=None, ptr=False, host=None, secure=False):
         self.ptr = ptr
-        self.prefix = 'https://screeps.com/ptr/api/' if ptr else 'https://screeps.com/api/'
+        self.host = host
+        self.secure = secure
+        if host is not None:
+            self.prefix = 'https://' if secure else 'http://'
+            self.prefix += host + '/api/'
+        else:
+            self.prefix = 'https://screeps.com/ptr/api/' if ptr else 'https://screeps.com/api/'
+
         self.token = None
         if u is not None and p is not None:
             self.token = self.post('auth/signin', email=u, password=p)['token']
@@ -193,11 +200,13 @@ class API(object):
 
 class Socket(object):
 
-    def __init__(self, user, password, ptr=False, logging=False):
+    def __init__(self, user, password, ptr=False, logging=False, host=None, secure=None):
         self.settings = {}
         self.user = user
         self.password = password
         self.ptr = ptr
+        self.host = host
+        self.secure = secure
         self.logging = False
 
     def on_error(self, ws, error):
@@ -207,7 +216,7 @@ class Socket(object):
         self.disconnect()
 
     def on_open(self, ws):
-        screepsConnection = API(u=self.user,p=self.password,ptr=self.ptr)
+        screepsConnection = API(u=self.user,p=self.password,ptr=self.ptr,host=self.host,secure=self.secure)
         me = screepsConnection.me()
         self.user_id = me['_id']
         ws.send('auth ' + screepsConnection.token)
@@ -293,7 +302,10 @@ class Socket(object):
             logging.getLogger('websocket').addHandler(logging.NullHandler())
             websocket.enableTrace(False)
 
-        if not self.ptr:
+        if self.host:
+            url = 'wss://' if self.secure else 'ws://'
+            url += self.host + '/socket/websocket'
+        elif not self.ptr:
             url = 'wss://screeps.com/socket/websocket'
         else:
             url = 'wss://screeps.com/ptr/socket/websocket'
