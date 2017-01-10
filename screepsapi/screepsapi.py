@@ -326,7 +326,7 @@ class Socket(object):
     def disconnect(self):
         if self.ws:
             self.ws.close()
-            self.ws = false
+            self.ws = False
 
 
     def start(self):
