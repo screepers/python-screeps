@@ -23,6 +23,7 @@ import warnings; warnings.filterwarnings('ignore', message='.*true sslcontext ob
 class API(object):
     def req(self, func, path, **args):
         r = func(self.prefix + path, headers={'X-Token': self.token, 'X-Username': self.token}, **args)
+        r.raise_for_status()
         self.token = r.headers.get('X-Token', self.token)
         try:
             return json.loads(r.text, object_pairs_hook=OrderedDict)
@@ -208,6 +209,8 @@ class Socket(object):
         self.host = host
         self.secure = secure
         self.logging = False
+        self.token = None
+        self.user_id = None
 
     def on_error(self, ws, error):
         print (error)
@@ -216,10 +219,9 @@ class Socket(object):
         self.disconnect()
 
     def on_open(self, ws):
-        screepsConnection = API(u=self.user,p=self.password,ptr=self.ptr,host=self.host,secure=self.secure)
-        me = screepsConnection.me()
-        self.user_id = me['_id']
-        ws.send('auth ' + screepsConnection.token)
+        assert self.token != None
+        ws.send('auth ' + self.token)
+        self.token = None
 
     def gzip(enable):
         if enable:
@@ -295,6 +297,11 @@ class Socket(object):
             self.process_rawdata(ws, data)
 
     def connect(self):
+        screepsConnection = API(u=self.user,p=self.password,ptr=self.ptr,host=self.host,secure=self.secure)
+        me = screepsConnection.me()
+        self.user_id = me['_id']
+        self.token = screepsConnection.token
+
         if self.logging:
             logging.getLogger('websocket').addHandler(logging.StreamHandler())
             websocket.enableTrace(True)
