@@ -153,6 +153,14 @@ are the ones listed below.
     - post data: `{ path, value }`
     - response: `{ ok, result: { ok, n }, ops: [ { user, expression, hidden } ], data, insertedCount, insertedIds }`
 
+- `https://screeps.com/api/user/memory-segment?segment=3`
+    - `{ ok, data }`
+    - `data` is the raw data string of the memory path
+
+- [POST] `https://screeps.com/api/user/memory-segment`
+    - post data: `{ segment, data }`
+    - response: `{ ok }`
+
 # Manipulating the game world
 - [POST] `https://screeps.com/api/game/gen-unique-object-name`
     - post data: `{ type }`

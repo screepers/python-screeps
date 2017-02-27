@@ -79,6 +79,13 @@ class API(object):
     def set_memory(self, path, value):
         return self.post('user/memory', path=path, value=value)
 
+    def memory_segment(self, segment):
+        ret = self.get('user/memory-segment', segment=segment)
+        return ret
+
+    def set_memory_segment(self, segment, data):
+        return self.post('user/memory-segment', segment=segment, data=data)
+
     def console(self, cmd):
         return self.post('user/console', expression=cmd)
 
