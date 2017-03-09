@@ -70,6 +70,10 @@ are the ones listed below.
     - `{ ok, list: [ { _id, created, user, active, type, amount, remainingAmount, resourceType, price, totalAmount, roomName } ] }`
     - `resourceType` is one of the RESOURCE_* constants.
 
+  - `https://screeps.com/api/game/market/stats?resourceType=Z`
+    - `{ ok, stats: [ { _id, resourceType, date, transactions, volume, avgPrice, stddevPrice } ] }`
+    - `resourceType` is one of the RESOURCE_* constants.
+
   - `https://screeps.com/api/user/money-history`
     - `{"ok":1,"page":0,"list":[ { _id, date, tick, user, type, balance, change, market: {} } ] }`
     - `page` used for pagination.
@@ -219,6 +223,9 @@ are the ones listed below.
     - response: `{ ok, stats: { <room name>: { status, novice, own: { user, level }, <stat>: [ { user, value } ] } }, users: { <user's _id>: { _id, username, badge: { type, color1, color2, color3, param, flip } } } }`
     - `status` and `novice` are as per the `room-status` call
     - `level` can be 0 to indicate a reserved room
+
+- `https://screeps.com/api/game/world-size`
+    - `{ ok, width, height }`
 
 - `https://screeps.com/room-history/E1N8/12340.json`
     - `{ timestamp, room, base, ticks: { <time>: <tick update object> } }`
