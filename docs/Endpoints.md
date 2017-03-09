@@ -224,9 +224,6 @@ are the ones listed below.
     - `status` and `novice` are as per the `room-status` call
     - `level` can be 0 to indicate a reserved room
 
-- `https://screeps.com/api/game/world-size`
-    - `{ ok, width, height }`
-
 - `https://screeps.com/room-history/E1N8/12340.json`
     - `{ timestamp, room, base, ticks: { <time>: <tick update object> } }`
     - the number in the URL is the tick to retrieve information for (from 5e5 ticks ago to about 50 ticks ago)
