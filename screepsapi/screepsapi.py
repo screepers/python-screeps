@@ -114,6 +114,9 @@ class API(object):
     def market_order_by_type(self, resourceType):
         return self.get('game/market/orders', resourceType=resourceType)
 
+    def market_stats_by_type(self, resourceType):
+        return self.get('game/market/stats', resourceType=resourceType)
+
     def market_history(self):
         return self.get('user/money-history')
 

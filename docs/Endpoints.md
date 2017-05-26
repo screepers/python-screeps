@@ -70,6 +70,10 @@ are the ones listed below.
     - `{ ok, list: [ { _id, created, user, active, type, amount, remainingAmount, resourceType, price, totalAmount, roomName } ] }`
     - `resourceType` is one of the RESOURCE_* constants.
 
+  - `https://screeps.com/api/game/market/stats?resourceType=Z`
+    - `{ ok, stats: [ { _id, resourceType, date, transactions, volume, avgPrice, stddevPrice } ] }`
+    - `resourceType` is one of the RESOURCE_* constants.
+
   - `https://screeps.com/api/user/money-history`
     - `{"ok":1,"page":0,"list":[ { _id, date, tick, user, type, balance, change, market: {} } ] }`
     - `page` used for pagination.
