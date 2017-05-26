@@ -24,7 +24,8 @@ class API(object):
     def req(self, func, path, **args):
         r = func(self.prefix + path, headers={'X-Token': self.token, 'X-Username': self.token}, **args)
         r.raise_for_status()
-        self.token = r.headers.get('X-Token', self.token)
+        if 'X-Token' in r.headers and len(r.headers['X-Token']) >= 40:
+            self.token = r.headers['X-Token']
         try:
             return json.loads(r.text, object_pairs_hook=OrderedDict)
         except ValueError:
@@ -227,6 +228,7 @@ class Socket(object):
 
     def on_open(self, ws):
         assert self.token != None
+        ws.send('gzip on')
         ws.send('auth ' + self.token)
         self.token = None
 
