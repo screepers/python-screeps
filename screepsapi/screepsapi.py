@@ -114,8 +114,8 @@ class API(object):
     def market_order_by_type(self, resourceType):
         return self.get('game/market/orders', resourceType=resourceType)
 
-    def market_history(self):
-        return self.get('user/money-history')
+    def market_history(self, page=None):
+        return self.get('user/money-history', page=page)
 
 
     #### leaderboard methods
