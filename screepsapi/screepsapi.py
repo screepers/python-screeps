@@ -61,61 +61,61 @@ class API(object):
     def stats(self,id,interval=8):
         return self.get('user/stats',id=id,interval=interval)
 
-    def user_find(self, username=None, user_id=None):
+    def user_find(self, username=None, user_id=None, shard='shard0'):
         if username is not None:
-            return self.get('user/find', username=username)
+            return self.get('user/find', username=username, shard=shard)
         if user_id is not None:
-            return self.get('user/find', id=user_id)
+            return self.get('user/find', id=user_id, shard=shard)
         return False
 
-    def user_rooms(self, userid):
-        return self.get('user/rooms', id=userid)
+    def user_rooms(self, userid, shard='shard0'):
+        return self.get('user/rooms', id=userid, shard=shard)
 
-    def memory(self, path=''):
-        ret = self.get('user/memory', path=path)
+    def memory(self, path='', shard='shard0'):
+        ret = self.get('user/memory', path=path, shard=shard)
         if 'data' in ret:
             ret['data'] = json.load(GzipFile(fileobj=StringIO(b64decode(ret['data'][3:]))))
         return ret
 
-    def set_memory(self, path, value):
-        return self.post('user/memory', path=path, value=value)
+    def set_memory(self, path, value, shard='shard0'):
+        return self.post('user/memory', path=path, value=value, shard=shard)
 
-    def get_segment(self, segment):
-        return self.get('user/memory-segment', segment=segment)
+    def get_segment(self, segment, shard='shard0'):
+        return self.get('user/memory-segment', segment=segment, shard=shard)
 
-    def set_segment(self, segment, data):
-        return self.post('user/memory-segment', segment=segment, data=data)
+    def set_segment(self, segment, data, shard='shard0'):
+        return self.post('user/memory-segment', segment=segment, data=data, shard=shard)
 
 
-    def console(self, cmd):
-        return self.post('user/console', expression=cmd)
+    def console(self, cmd, shard='shard0'):
+        return self.post('user/console', expression=cmd, shard=shard)
 
 
     #### room info methods
 
-    def room_overview(self, room, interval=8):
-        return self.get('game/room-overview', interval=interval, room=room)
+    def room_overview(self, room, interval=8, shard='shard0'):
+        return self.get('game/room-overview', interval=interval, room=room, shard=shard)
 
-    def room_terrain(self, room, encoded=False):
-        return self.get('game/room-terrain', room=room, encoded=('1' if encoded else None))
+    def room_terrain(self, room, encoded=False, shard='shard0'):
+        return self.get('game/room-terrain', room=room, shard=shard, encoded=('1' if encoded else None))
 
-    def room_status(self, room):
-        return self.get('game/room-status', room=room)
+    def room_status(self, room, shard='shard0'):
+        return self.get('game/room-status', room=room, shard=shard)
 
 
     #### market info methods
 
-    def orders_index(self):
-        return self.get('game/market/orders-index')
+    def orders_index(self, shard='shard0')):
+        return self.get('game/market/orders-index', shard=shard)
 
-    def my_orders(self):
-        return self.get('game/market/my-orders')
+    def my_orders(self, shard='shard0')):
+        return self.get('game/market/my-orders', shard=shard)
 
-    def market_order_by_type(self, resourceType):
-        return self.get('game/market/orders', resourceType=resourceType)
+    def market_order_by_type(self, resourceType, shard='shard0'):
+        return self.get('game/market/orders', resourceType=resourceType, shard=shard)
 
-    def market_history(self, page=None):
-        return self.get('user/money-history', page=page)
+    def market_history(self, page=None, shard='shard0'):
+        return self.get('user/money-history', page=page, shard=shard)
 
 
     #### leaderboard methods
@@ -193,14 +193,20 @@ class API(object):
 
     #### other methods
 
-    def time(self):
-        return self.get('game/time')['time']
+    def time(self, shard='shard0'):
+        return self.get('game/time', shard=shard)['time']
 
-    def map_stats(self, rooms, statName):
-        return self.post('game/map-stats', rooms=rooms, statName=statName)
+    def map_stats(self, rooms, statName, shard='shard0'):
+        return self.post('game/map-stats', rooms=rooms, statName=statName, shard=shard)
+
+    def worldsize(self, shard='shard0'):
+        return self.get('game/worldsize', shard=shard)
 
     def history(self, room, tick):
         return self.get('../room-history/%s/%s.json' % (room, tick - (tick % 20)))
+
+    def shard_info(self):
+        return self.get('game/shards/info')
 
     def activate_ptr(self):
         if self.ptr:
