@@ -105,10 +105,10 @@ class API(object):
 
     #### market info methods
 
-    def orders_index(self, shard='shard0')):
+    def orders_index(self, shard='shard0'):
         return self.get('game/market/orders-index', shard=shard)
 
-    def my_orders(self, shard='shard0')):
+    def my_orders(self, shard='shard0'):
         return self.get('game/market/my-orders', shard=shard)
 
     def market_order_by_type(self, resourceType, shard='shard0'):
