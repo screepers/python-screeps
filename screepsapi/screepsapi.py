@@ -205,6 +205,15 @@ class API(object):
     def history(self, room, tick):
         return self.get('../room-history/%s/%s.json' % (room, tick - (tick % 20)))
 
+    def get_shards(self):
+        try:
+            shard_data = self.shard_info()['shards']
+            shards = [x['name'] for x in shard_data]
+            if len(shards) > 0:
+                return shards
+        finally:
+            return False
+
     def shard_info(self):
         return self.get('game/shards/info')
 
