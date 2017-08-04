@@ -200,7 +200,7 @@ class API(object):
         return self.post('game/map-stats', rooms=rooms, statName=statName, shard=shard)
 
     def worldsize(self, shard='shard0'):
-        return self.get('game/worldsize', shard=shard)
+        return self.get('game/world-size', shard=shard)
 
     def history(self, room, tick):
         return self.get('../room-history/%s/%s.json' % (room, tick - (tick % 20)))
@@ -211,8 +211,9 @@ class API(object):
             shards = [x['name'] for x in shard_data]
             if len(shards) > 0:
                 return shards
-        finally:
-            return False
+        except:
+            pass
+        return False
 
     def shard_info(self):
         return self.get('game/shards/info')
