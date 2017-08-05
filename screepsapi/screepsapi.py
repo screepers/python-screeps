@@ -12,6 +12,7 @@ from gzip import GzipFile
 import json
 import logging
 import requests
+import ssl
 import sys
 import websocket
 import zlib
@@ -348,11 +349,13 @@ class Socket(object):
                                     on_close=self.on_close,
                                     on_open=self.on_open)
 
+        ssl_defaults = ssl.get_default_verify_paths()
+        sslopt_ca_certs = {'ca_certs': ssl_defaults.cafile}
         if 'http_proxy' in self.settings and self.settings['http_proxy'] is not None:
             http_proxy_port = self.settings['http_proxy_port'] if 'http_proxy_port' in self.settings else 8080
-            self.ws.run_forever(http_proxy_host=self.settings['http_proxy'], http_proxy_port=http_proxy_port, ping_interval=1)
+            self.ws.run_forever(http_proxy_host=self.settings['http_proxy'], http_proxy_port=http_proxy_port, ping_interval=1, sslopt=sslopt_ca_certs)
         else:
-            self.ws.run_forever(ping_interval=1)
+            self.ws.run_forever(ping_interval=1, sslopt=sslopt_ca_certs)
 
 
     def disconnect(self):
