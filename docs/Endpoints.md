@@ -130,7 +130,7 @@ are the ones listed below.
 
 - `https://screeps.com/api/user/world-status`
     - `{ ok, status }`
-    - `status` is usually "normal"; it's unknown what else it can be
+    - `status` is "normal" is the player is spawned, "empty" otherwise
 
 - `https://screeps.com/api/user/world-start-room`
     - `{ ok, room:  [ <room name> ] }`
