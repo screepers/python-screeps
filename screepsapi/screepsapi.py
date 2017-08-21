@@ -1,19 +1,17 @@
 # Copyright @dzhu, @tedivm
 # https://gist.github.com/dzhu/d6999d126d0182973b5c
 
+from __future__ import print_function
+
 from base64 import b64decode
 from collections import OrderedDict
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO
 
 from gzip import GzipFile
 import json
 import logging
 import requests
 import ssl
-import sys
 import websocket
 import zlib
 
@@ -30,7 +28,7 @@ class API(object):
         try:
             return json.loads(r.text, object_pairs_hook=OrderedDict)
         except ValueError:
-            print ('JSON failure:', r.text)
+            print('JSON failure: %s' % r.text)
         return None
 
     def get(self, _path, **args): return self.req(requests.get, _path, params=args)
@@ -238,7 +236,7 @@ class Socket(object):
         self.user_id = None
 
     def on_error(self, ws, error):
-        print (error)
+        print(error)
 
     def on_close(self, ws):
         self.disconnect()
