@@ -1,5 +1,5 @@
 # Copyright @dzhu, @tedivm
-# https://gist.github.com/dzhu/d6999d126d0182973b5c
+# https://github.com/screepers/python-screeps
 
 from base64 import b64decode
 from collections import OrderedDict
@@ -158,25 +158,29 @@ class API(object):
     def gen_unique_name(self, type):
         return self.post('game/gen-unique-object-name', type=type)
 
-    def flag_create(self, room, x, y, name=None, color='white', secondaryColor=None):
+    def flag_create(self, room, x, y, name=None, color='white', secondaryColor=None, shard='shard0'):
         if name is None:
             name = self.gen_unique_name('flag')['name']
         if secondaryColor is None:
             secondaryColor = color
 
-        return self.post('game/create-flag', room=room, x=x, y=y, name=name, color=color, secondaryColor=secondaryColor)
+        return self.post('game/create-flag', room=room, x=x, y=y, name=name, color=color, secondaryColor=secondaryColor, shard='shard0')
 
     def flag_change_pos(self, _id, room, x, y):
         return self.post('game/change-flag', _id=_id, room=room, x=x, y=y)
 
-    def flag_change_color(self, _id, color, secondaryColor=None):
+    def flag_change_color(self, _id, color, secondaryColor=None, shard='shard0'):
         if secondaryColor is None:
             secondaryColor = color
 
-        return self.post('game/change-flag-color', _id=_id, color=color, secondaryColor=secondaryColor)
+        return self.post('game/change-flag-color', _id=_id, color=color, secondaryColor=secondaryColor, shard='shard0')
 
-    def create_site(self, typ, room, x, y):
-        return self.post('game/create-construction', structureType=typ, room=room, x=x, y=y)
+    def create_site(self, type, room, x, y, shard='shard0'):
+        return self.post('game/create-construction', structureType=type, room=room, x=x, y=y, shard=shard)
+
+    def place_spawn(self, room, name, x, y, shard='shard0'):
+        self.post('game/place-spawn', room=room, name=name, x=x, y=y, shard=shard)
+        pass
 
 
     #### battle info methods
@@ -202,6 +206,12 @@ class API(object):
 
     def worldsize(self, shard='shard0'):
         return self.get('game/world-size', shard=shard)
+
+    def world_status(self):
+        return self.get('user/world-status')
+
+    def world_start_room(self, shard=None):
+        return self.get('user/world-start-room', shard=shard)
 
     def history(self, room, tick):
         return self.get('../room-history/%s/%s.json' % (room, tick - (tick % 20)))
