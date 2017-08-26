@@ -98,7 +98,10 @@ class API(object):
         return self.get('game/room-overview', interval=interval, room=room, shard=shard)
 
     def room_terrain(self, room, encoded=False, shard='shard0'):
-        return self.get('game/room-terrain', room=room, shard=shard, encoded=('1' if encoded else None))
+        if encoded:
+            return self.get('game/room-terrain', room=room, shard=shard, encoded=('1' if encoded else None))
+        else:
+            return self.get('game/room-terrain', room=room, shard=shard)
 
     def room_status(self, room, shard='shard0'):
         return self.get('game/room-status', room=room, shard=shard)
