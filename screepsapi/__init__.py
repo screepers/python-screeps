@@ -1,3 +1,3 @@
-from screepsapi import *
+from screepsapi.screepsapi import *
+__all__ = ['API', 'Socket']
 
-__version__ = '0.2.0'
