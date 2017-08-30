@@ -8,6 +8,7 @@ try:
 except ImportError:
     from io import StringIO
 
+from io import BytesIO
 from gzip import GzipFile
 import json
 import logging
@@ -75,14 +76,26 @@ class API(object):
     def memory(self, path='', shard='shard0'):
         ret = self.get('user/memory', path=path, shard=shard)
         if 'data' in ret:
-            ret['data'] = json.load(GzipFile(fileobj=StringIO(b64decode(ret['data'][3:]))))
+            try:
+                gzip_input = StringIO(b64decode(ret['data'][3:]))
+            except:
+                gzip_input = BytesIO(b64decode(ret['data'][3:]))
+            ret['data'] = json.load(GzipFile(fileobj=gzip_input))
         return ret
 
     def set_memory(self, path, value, shard='shard0'):
         return self.post('user/memory', path=path, value=value, shard=shard)
 
     def get_segment(self, segment, shard='shard0'):
-        return self.get('user/memory-segment', segment=segment, shard=shard)
+        ret = self.get('user/memory-segment', segment=segment, shard=shard)
+        if 'data' in ret and ret['data'][:3] == 'gz:':
+            try:
+                gzip_input = StringIO(b64decode(ret['data'][3:]))
+            except:
+                gzip_input = BytesIO(b64decode(ret['data'][3:]))
+            ret['data'] = GzipFile(fileobj=gzip_input)
+        return ret
+
 
     def set_segment(self, segment, data, shard='shard0'):
         return self.post('user/memory-segment', segment=segment, data=data, shard=shard)
