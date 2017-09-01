@@ -290,13 +290,13 @@ class Socket(object):
     def set_subscriptions(self):
         pass
 
-    def process_log(self, ws, message):
+    def process_log(self, ws, message, shard='shard0'):
         pass
 
-    def process_results(self, ws, message):
+    def process_results(self, ws, message, shard='shard0'):
         pass
 
-    def process_error(self, ws, message):
+    def process_error(self, ws, message, shard='shard0'):
         pass
 
     def process_cpu(self, ws, data):
@@ -315,7 +315,7 @@ class Socket(object):
             return
 
         if (message.startswith('gz')):
-            message = zlib.decompress(b64decode(message[3:]), 0)
+            message = zlib.decompress(b64decode(message[3:]), 0).decode('utf-8')
 
         try:
             self.process_message(ws, message)
@@ -328,20 +328,24 @@ class Socket(object):
                 return
 
             if data[0].endswith('console'):
+                if 'shard' in data[1]:
+                    shard = data[1]['shard']
+                else:
+                    shard = 'shard0'
 
                 if 'messages' in data[1]:
                     stream = []
 
                     if 'log' in data[1]['messages']:
                         for line in data[1]['messages']['log']:
-                            self.process_log(ws, line)
+                            self.process_log(ws, line, shard)
 
                     if 'results' in data[1]['messages']:
                         for line in data[1]['messages']['results']:
-                            self.process_results(ws, line)
+                            self.process_results(ws, line, shard)
 
                 if 'error' in data[1]:
-                    self.process_error(ws, data[1]['error'])
+                    self.process_error(ws, data[1]['error'], shard)
 
             if data[0].endswith('cpu'):
                 self.process_cpu(ws, data[1])
