@@ -80,7 +80,8 @@ class API(object):
                 gzip_input = StringIO(b64decode(ret['data'][3:]))
             except:
                 gzip_input = BytesIO(b64decode(ret['data'][3:]))
-            ret['data'] = json.load(GzipFile(fileobj=gzip_input))
+            gzip_string = GzipFile(fileobj=gzip_input).read().decode("utf-8")
+            ret['data'] = json.loads(gzip_string)
         return ret
 
     def set_memory(self, path, value, shard='shard0'):
@@ -93,7 +94,8 @@ class API(object):
                 gzip_input = StringIO(b64decode(ret['data'][3:]))
             except:
                 gzip_input = BytesIO(b64decode(ret['data'][3:]))
-            ret['data'] = GzipFile(fileobj=gzip_input)
+            gzip_string = GzipFile(fileobj=gzip_input).read().decode("utf-8")
+            ret['data'] = json.loads(gzip_string)
         return ret
 
 
