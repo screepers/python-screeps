@@ -197,9 +197,13 @@ class API(object):
         return self.post('game/create-construction', structureType=type, room=room, x=x, y=y, shard=shard)
 
     def place_spawn(self, room, name, x, y, shard='shard0'):
-        self.post('game/place-spawn', room=room, name=name, x=x, y=y, shard=shard)
-        pass
+        return self.post('game/place-spawn', room=room, name=name, x=x, y=y, shard=shard)
 
+    def respawn(self):
+        return self.post('game/respawn')
+
+    def respawn_prohibited_rooms(self):
+        return self.get('user/respawn_prohibited_rooms')
 
     #### battle info methods
 
