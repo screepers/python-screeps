@@ -200,7 +200,7 @@ class API(object):
         return self.post('game/place-spawn', room=room, name=name, x=x, y=y, shard=shard)
 
     def respawn(self):
-        return self.post('game/respawn')
+        return self.post('user/respawn')
 
     def respawn_prohibited_rooms(self, shard='shard0'):
         return self.get('user/respawn-prohibited-rooms', shard='shard0')
