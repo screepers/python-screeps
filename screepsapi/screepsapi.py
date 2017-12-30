@@ -37,7 +37,7 @@ class API(object):
     def get(self, _path, **args): return self.req(requests.get, _path, params=args)
     def post(self, _path, **args): return self.req(requests.post, _path, json=args)
 
-    def __init__(self, u=None, p=None, ptr=False, host=None, secure=False):
+    def __init__(self, u=None, p=None, token=None, ptr=False, host=None, secure=False):
         self.ptr = ptr
         self.host = host
         self.secure = secure
@@ -50,7 +50,8 @@ class API(object):
         self.token = None
         if u is not None and p is not None:
             self.token = self.post('auth/signin', email=u, password=p)['token']
-
+        elif token is not None:
+            self.token = token
 
     #### miscellaneous user methods
 

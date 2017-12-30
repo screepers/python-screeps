@@ -8,7 +8,7 @@ except(IOError, ImportError):
     long_description = open('README.md').read()
 
 
-version = '0.4.6'
+version = '0.5.0'
 setup(
   name = 'screepsapi',
   version = version,
