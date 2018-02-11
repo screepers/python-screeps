@@ -259,7 +259,7 @@ class API(object):
 
 class Socket(object):
 
-    def __init__(self, user, password, ptr=False, logging=False, host=None, secure=None, token=None):
+    def __init__(self, user=None, password=None, ptr=False, logging=False, host=None, secure=None, token=None):
         self.settings = {}
         self.user = user
         self.password = password
@@ -283,11 +283,11 @@ class Socket(object):
         ws.send('auth ' + self.token)
         self.token = None
 
-    def gzip(enable):
+    def gzip(self, enable):
         if enable:
-            ws.send('gzip on')
+            self.ws.send('gzip on')
         else:
-            ws.send('gzip off')
+            self.ws.send('gzip off')
 
     def subscribe_user(self, watchpoint):
         self.subscribe('user:' + self.user_id + '/' + watchpoint)
