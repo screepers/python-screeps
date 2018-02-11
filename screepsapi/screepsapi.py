@@ -259,7 +259,7 @@ class API(object):
 
 class Socket(object):
 
-    def __init__(self, user, password, ptr=False, logging=False, host=None, secure=None):
+    def __init__(self, user, password, ptr=False, logging=False, host=None, secure=None, token=None):
         self.settings = {}
         self.user = user
         self.password = password
@@ -269,6 +269,7 @@ class Socket(object):
         self.logging = False
         self.token = None
         self.user_id = None
+        self.atoken = token
 
     def on_error(self, ws, error):
         print (error)
@@ -360,7 +361,7 @@ class Socket(object):
             self.process_rawdata(ws, data)
 
     def connect(self):
-        screepsConnection = API(u=self.user,p=self.password,ptr=self.ptr,host=self.host,secure=self.secure)
+        screepsConnection = API(u=self.user,p=self.password,ptr=self.ptr,host=self.host,secure=self.secure, token=self.atoken)
         me = screepsConnection.me()
         self.user_id = me['_id']
         self.token = screepsConnection.token
