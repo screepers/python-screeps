@@ -96,6 +96,8 @@ are the ones listed below.
 
 - `https://screeps.com/api/leaderboard/list?limit=10&mode=world&offset=10&season=2015-09`
     - `{ ok, list: [ { _id, season, user, score, rank } ], count, users: { <user's _id>: { _id, username, badge: { type, color1, color2, color3, param, flip }, gcl } } }`
+    - mode can be "world" or "power"
+    - setting limit to too high a value will give an "invalid parameters" response
 
 # Messages
 - `https://screeps.com/api/user/messages/index`
