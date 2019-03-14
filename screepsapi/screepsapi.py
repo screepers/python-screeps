@@ -204,7 +204,7 @@ class API(object):
         return self.post('user/respawn')
 
     def respawn_prohibited_rooms(self, shard='shard0'):
-        return self.get('user/respawn-prohibited-rooms', shard='shard0')
+        return self.get('user/respawn-prohibited-rooms', shard=shard)
 
     #### battle info methods
 
