@@ -382,10 +382,10 @@ class Socket(object):
             url = 'wss://screeps.com/ptr/socket/websocket'
 
         self.ws = websocket.WebSocketApp(url=url,
-                                    on_message=self.on_message,
-                                    on_error=self.on_error,
-                                    on_close=self.on_close,
-                                    on_open=self.on_open)
+                                    on_message=lambda ws, message: self.on_message(ws,message),
+                                    on_error=lambda ws, error: self.on_error(ws,error),
+                                    on_close=lambda ws: self.on_close(ws),
+                                    on_open=lambda ws: self.on_open(ws))
 
         ssl_defaults = ssl.get_default_verify_paths()
         sslopt_ca_certs = {'ca_certs': ssl_defaults.cafile}
