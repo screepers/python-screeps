@@ -24,7 +24,7 @@ import warnings; warnings.filterwarnings('ignore', message='.*true sslcontext ob
 
 class API(object):
     def req(self, func, path, **args):
-        r = func(self.prefix + path, headers={'X-Token': self.token, 'X-Username': self.token}, **args)
+        r = func(self.url + path, headers={'X-Token': self.token, 'X-Username': self.token}, **args)
         r.raise_for_status()
         if 'X-Token' in r.headers and len(r.headers['X-Token']) >= 40:
             self.token = r.headers['X-Token']
@@ -37,15 +37,15 @@ class API(object):
     def get(self, _path, **args): return self.req(requests.get, _path, params=args)
     def post(self, _path, **args): return self.req(requests.post, _path, json=args)
 
-    def __init__(self, u=None, p=None, token=None, ptr=False, host=None, secure=False):
-        self.ptr = ptr
+    def __init__(self, u=None, p=None, token=None, host=None, prefix=None, secure=False):
         self.host = host
+        self.prefix = prefix
         self.secure = secure
-        if host is not None:
-            self.prefix = 'https://' if secure else 'http://'
-            self.prefix += host + '/api/'
-        else:
-            self.prefix = 'https://screeps.com/ptr/api/' if ptr else 'https://screeps.com/api/'
+
+        self.url = 'https://' if secure else 'http://'
+        self.url += host if host else 'screeps.com'
+        self.url += prefix if prefix
+        self.url += '/api/'
 
         self.token = None
         if u is not None and p is not None:
@@ -259,12 +259,12 @@ class API(object):
 
 class Socket(object):
 
-    def __init__(self, user=None, password=None, ptr=False, logging=False, host=None, secure=None, token=None):
+    def __init__(self, user=None, password=None, logging=False, host=None, prefix=None, secure=None, token=None):
         self.settings = {}
         self.user = user
         self.password = password
-        self.ptr = ptr
         self.host = host
+        self.prefix = prefix
         self.secure = secure
         self.logging = False
         self.token = None
@@ -361,7 +361,14 @@ class Socket(object):
             self.process_rawdata(ws, data)
 
     def connect(self):
-        screepsConnection = API(u=self.user,p=self.password,ptr=self.ptr,host=self.host,secure=self.secure, token=self.atoken)
+        screepsConnection = API(
+            u=self.user,
+            p=self.password,
+            host=self.host,
+            prefix=self.prefix,
+            secure=self.secure,
+            token=self.atoken
+        )
         me = screepsConnection.me()
         self.user_id = me['_id']
         self.token = screepsConnection.token
@@ -373,13 +380,10 @@ class Socket(object):
             logging.getLogger('websocket').addHandler(logging.NullHandler())
             websocket.enableTrace(False)
 
-        if self.host:
-            url = 'wss://' if self.secure else 'ws://'
-            url += self.host + '/socket/websocket'
-        elif not self.ptr:
-            url = 'wss://screeps.com/socket/websocket'
-        else:
-            url = 'wss://screeps.com/ptr/socket/websocket'
+        url = 'wss://' if self.secure else 'ws://'
+        url += self.host if self.host else 'screeps.com'
+        url += self.prefix if self.prefix
+        url += '/socket/websocket'
 
         self.ws = websocket.WebSocketApp(url=url,
                                     on_message=lambda ws, message: self.on_message(ws,message),
