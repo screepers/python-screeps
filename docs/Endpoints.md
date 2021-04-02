@@ -32,6 +32,10 @@ are the ones listed below.
 - `https://screeps.com/api/game/room-overview?interval=8&room=E1N8`
     - `{ ok, owner: { username, badge: { type, color1, color2, color3, param, flip } }, stats: { energyHarvested: [ { value, endTime } ], energyConstruction: [ { value, endTime } ], energyCreeps: [ { value, endTime } ], energyControl: [ { value, endTime } ], creepsProduced: [ { value, endTime } ], creepsLost: [ { value, endTime } ] }, statsMax: { energy1440, energyCreeps1440, energy8, energyControl8, creepsLost180, energyHarvested8, energy180, energyConstruction180, creepsProduced8, energyControl1440, energyCreeps8, energyHarvested1440, creepsLost1440, energyConstruction1440, energyHarvested180, creepsProduced180, creepsProduced1440, energyCreeps180, energyControl180, energyConstruction8, creepsLost8 } }`
 
+- `https://screeps.com/api/game/room-objects?room=E1N8`
+    - `{ ok, objects: [ { _id, room, type, x, y } ], users: { <user's _id>: { _id, username, badge: { type, color1, color2, color3, param, flip } } } }`
+    - `objects` contains a list of all game objects in the room (creeps, structures, sources, mineral, etc)
+
 - `https://screeps.com/api/game/room-terrain?room=E1N8`
     - `{ ok, terrain: [ { room, x, y, type } ] }`
     - `type` in each element of `terrain` can be "wall" or "swamp"

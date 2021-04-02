@@ -23,6 +23,8 @@ import zlib
 import warnings; warnings.filterwarnings('ignore', message='.*true sslcontext object.*')
 
 class API(object):
+    DEFAULT_SHARD = 'shard0'
+
     def req(self, func, path, **args):
         r = func(self.url + path, headers={'X-Token': self.token, 'X-Username': self.token}, **args)
         r.raise_for_status()
@@ -61,20 +63,20 @@ class API(object):
     def overview(self, interval=8, statName='energyHarvested'):
         return self.get('user/overview', interval=interval, statName=statName)
 
-    def stats(self,id,interval=8):
-        return self.get('user/stats',id=id,interval=interval)
+    def stats(self, id, interval=8):
+        return self.get('user/stats', id=id, interval=interval)
 
-    def user_find(self, username=None, user_id=None, shard='shard0'):
+    def user_find(self, username=None, user_id=None, shard=self.DEFAULT_SHARD):
         if username is not None:
             return self.get('user/find', username=username, shard=shard)
         if user_id is not None:
             return self.get('user/find', id=user_id, shard=shard)
         return False
 
-    def user_rooms(self, userid, shard='shard0'):
+    def user_rooms(self, userid, shard=self.DEFAULT_SHARD):
         return self.get('user/rooms', id=userid, shard=shard)
 
-    def memory(self, path='', shard='shard0'):
+    def memory(self, path='', shard=self.DEFAULT_SHARD):
         ret = self.get('user/memory', path=path, shard=shard)
         if 'data' in ret:
             try:
@@ -85,10 +87,10 @@ class API(object):
             ret['data'] = json.loads(gzip_string)
         return ret
 
-    def set_memory(self, path, value, shard='shard0'):
+    def set_memory(self, path, value, shard=self.DEFAULT_SHARD):
         return self.post('user/memory', path=path, value=value, shard=shard)
 
-    def get_segment(self, segment, shard='shard0'):
+    def get_segment(self, segment, shard=self.DEFAULT_SHARD):
         ret = self.get('user/memory-segment', segment=segment, shard=shard)
         if 'data' in ret and ret['data'][:3] == 'gz:':
             try:
@@ -100,41 +102,44 @@ class API(object):
         return ret
 
 
-    def set_segment(self, segment, data, shard='shard0'):
+    def set_segment(self, segment, data, shard=self.DEFAULT_SHARD):
         return self.post('user/memory-segment', segment=segment, data=data, shard=shard)
 
 
-    def console(self, cmd, shard='shard0'):
+    def console(self, cmd, shard=self.DEFAULT_SHARD):
         return self.post('user/console', expression=cmd, shard=shard)
 
 
     #### room info methods
 
-    def room_overview(self, room, interval=8, shard='shard0'):
+    def room_overview(self, room, interval=8, shard=self.DEFAULT_SHARD):
         return self.get('game/room-overview', interval=interval, room=room, shard=shard)
 
-    def room_terrain(self, room, encoded=False, shard='shard0'):
+    def room_objects(self, room, shard=self.DEFAULT_SHARD):
+        return self.get('game/room-objects', room=room, shard=shard)
+
+    def room_terrain(self, room, encoded=False, shard=self.DEFAULT_SHARD):
         if encoded:
             return self.get('game/room-terrain', room=room, shard=shard, encoded=('1' if encoded else None))
         else:
             return self.get('game/room-terrain', room=room, shard=shard)
 
-    def room_status(self, room, shard='shard0'):
+    def room_status(self, room, shard=self.DEFAULT_SHARD):
         return self.get('game/room-status', room=room, shard=shard)
 
 
     #### market info methods
 
-    def orders_index(self, shard='shard0'):
+    def orders_index(self, shard=self.DEFAULT_SHARD):
         return self.get('game/market/orders-index', shard=shard)
 
-    def my_orders(self, shard='shard0'):
+    def my_orders(self, shard=self.DEFAULT_SHARD):
         return self.get('game/market/my-orders', shard=shard)
 
-    def market_order_by_type(self, resourceType, shard='shard0'):
+    def market_order_by_type(self, resourceType, shard=self.DEFAULT_SHARD):
         return self.get('game/market/orders', resourceType=resourceType, shard=shard)
 
-    def market_history(self, page=None, shard='shard0'):
+    def market_history(self, page=None, shard=self.DEFAULT_SHARD):
         return self.get('user/money-history', page=page, shard=shard)
 
 
