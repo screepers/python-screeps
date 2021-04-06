@@ -22,6 +22,9 @@ except ImportError:
 DEFAULT_SHARD = 'shard0'
 
 class API(object):
+    """
+    Screeps API client
+    """
 
     def req(self, func, path, **args):
         r = func(self.url + path, headers={'X-Token': self.token, 'X-Username': self.token}, **args)
@@ -31,7 +34,7 @@ class API(object):
         try:
             return json.loads(r.text, object_pairs_hook=OrderedDict)
         except ValueError:
-            print ('JSON failure:', r.text)
+            print('JSON failure:', r.text)
         return None
 
     def get(self, _path, **args): return self.req(requests.get, _path, params=args)
@@ -44,7 +47,7 @@ class API(object):
 
         self.url = 'https://' if secure else 'http://'
         self.url += host if host else 'screeps.com'
-        self.url += prefix if prefix
+        self.url += prefix if prefix else ''
         self.url += '/api/'
 
         self.token = None
@@ -84,7 +87,7 @@ class API(object):
     def set_username(self, username):
         return self.post('register/set-username', username=username)
 
-    def register(self, username, email, password, modules)
+    def register(self, username, email, password, modules):
         return self.post('register/submit', username=username, email=email, password=password, modules=modules)
 
     
@@ -251,13 +254,13 @@ class API(object):
     def gen_unique_name(self, type):
         return self.post('game/gen-unique-object-name', type=type)
     
-    def check_unique_name(self, type, name=None, shard=DEFAULT_SHARD)
+    def check_unique_name(self, type, name=None, shard=DEFAULT_SHARD):
         return self.post('game/check-unique-object-name', type=type, name=name, shard=shard)
 
     def gen_unique_flag(self, shard=DEFAULT_SHARD):
         return self.post('game/gen-unique-flag-name', shard=shard)
     
-    def check_unique_flag(self, name=None, shard=DEFAULT_SHARD)
+    def check_unique_flag(self, name=None, shard=DEFAULT_SHARD):
         return self.post('game/check-unique-flag-name', name=name, shard=shard)
 
     def flag_create(self, room, x, y, name=None, color='white', secondaryColor=None, shard=DEFAULT_SHARD):
@@ -385,7 +388,9 @@ class API(object):
 
 
 class Socket(object):
-
+    """
+    Screeps WebSocket comunitcator
+    """
     def __init__(self, user=None, password=None, logging=False, host=None, prefix=None, secure=True, token=None):
         self.settings = {}
         self.user = user
@@ -399,7 +404,7 @@ class Socket(object):
         self.atoken = token
 
     def on_error(self, ws, error):
-        print (error)
+        print(error)
 
     def on_close(self, ws):
         self.disconnect()
@@ -439,7 +444,6 @@ class Socket(object):
 
     def process_rawdata(self, ws, data):
         pass
-
 
     def on_message(self, ws, message):
         if (message.startswith('auth ok')):
@@ -509,7 +513,7 @@ class Socket(object):
 
         url = 'wss://' if self.secure else 'ws://'
         url += self.host if self.host else 'screeps.com'
-        url += self.prefix if self.prefix
+        url += self.prefix if self.prefix else ''
         url += '/socket/websocket'
 
         self.ws = websocket.WebSocketApp(
