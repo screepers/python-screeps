@@ -1,6 +1,15 @@
 # Copyright @dzhu, @tedivm
 # https://github.com/screepers/python-screeps
 
+from base64 import b64decode
+from collections import OrderedDict
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+from io import BytesIO
+from gzip import GzipFile
 import json
 import logging
 import requests
@@ -8,24 +17,11 @@ import ssl
 import sys
 import websocket
 import zlib
-import time
-
-from base64 import b64decode
-from collections import OrderedDict
-from io import BytesIO
-from gzip import GzipFile
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
 
 DEFAULT_SHARD = 'shard0'
 
 class API(object):
-    """
-    Screeps API client
-    """
-
+    
     def req(self, func, path, **args):
         r = func(self.url + path, headers={'X-Token': self.token, 'X-Username': self.token}, **args)
         r.raise_for_status()
@@ -388,9 +384,7 @@ class API(object):
 
 
 class Socket(object):
-    """
-    Screeps WebSocket comunitcator
-    """
+
     def __init__(self, user=None, password=None, logging=False, host=None, prefix=None, secure=True, token=None):
         self.settings = {}
         self.user = user
