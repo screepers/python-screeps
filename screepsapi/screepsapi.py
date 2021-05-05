@@ -315,12 +315,6 @@ class API(object):
     def nukes(self):
         return self.get('experimental/nukes')
 
-    def warpath(self, interval=100):
-        return self.get('warpath/battles', interval=interval)
-
-    def scoreboard(self, limit=20, offset=0):
-        return self.get('scoreboard/list', limit=limit, offset=offset)
-
 
     #### decoration methods
 
