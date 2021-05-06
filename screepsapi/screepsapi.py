@@ -1,4 +1,4 @@
-# Copyright @dzhu, @tedivm
+# Copyright @dzhu, @tedivm, @admon84
 # https://github.com/screepers/python-screeps
 
 from base64 import b64decode
@@ -18,7 +18,15 @@ import sys
 import websocket
 import zlib
 
+## Python before 2.7.10 or so has somewhat broken SSL support that throws a warning; suppress it
+import warnings; warnings.filterwarnings('ignore', message='.*true sslcontext object.*')
+
+# Constants
+OFFICIAL_HOST = 'screeps.com'
+PTR_PREFIX = '/ptr'
 DEFAULT_SHARD = 'shard0'
+OFFICIAL_HISTORY_INTERVAL = 100
+PRIVATE_HISTORY_INTERVAL = 20
 
 class API(object):
     
@@ -36,13 +44,15 @@ class API(object):
     def get(self, _path, **args): return self.req(requests.get, _path, params=args)
     def post(self, _path, **args): return self.req(requests.post, _path, json=args)
 
-    def __init__(self, u=None, p=None, token=None, host=None, prefix=None, secure=True):
+    def __init__(self, u=None, p=None, token=None, host=None, prefix=None, secure=True, ptr=False):
+        prefix = PTR_PREFIX if ptr else prefix
+        
         self.host = host
         self.prefix = prefix
         self.secure = secure
 
         self.url = 'https://' if secure else 'http://'
-        self.url += host if host else 'screeps.com'
+        self.url += host if host else OFFICIAL_HOST
         self.url += prefix if prefix else ''
         self.url += '/api/'
 
@@ -61,15 +71,12 @@ class API(object):
     
     def signin(self, email=None, password=None):
         return self.post('auth/signin', email=email, password=password)
-
-    def queryToken(self, token=None):
-        return self.get('auth/query-token', token=token)
-
-    def servers_list(self):
-        return self.post('servers/list')
     
-    def version(self):
-        return self.post('version')
+    def steam_ticket(self, ticket, useNativeAuth=False):
+        return self.post('auth/steam-ticket', ticket=ticket, useNativeAuth=useNativeAuth)
+
+    def query_token(self, token=None):
+        return self.get('auth/query-token', token=token)
 
     
     #### register methods
@@ -102,7 +109,7 @@ class API(object):
         return self.post('user/messages/send', respondent=respondent, text=text)
 
     def msg_mark_read(self, msg_id):
-        return self.post('user/messages/send', id=msg_id)
+        return self.post('user/messages/mark-read', id=msg_id)
 
 
     #### user methods
@@ -110,18 +117,18 @@ class API(object):
     def overview(self, interval=8, statName='energyHarvested'):
         return self.get('user/overview', interval=interval, statName=statName)
 
-    def user_find(self, username=None, user_id=None, shard=DEFAULT_SHARD):
+    def stats(self, user_id, interval=8):
+        return self.get('user/stats', id=user_id, interval=interval)
+
+    def user_find(self, username=None, user_id=None):
         if username is not None:
-            return self.get('user/find', username=username, shard=shard)
+            return self.get('user/find', username=username)
         if user_id is not None:
-            return self.get('user/find', id=user_id, shard=shard)
+            return self.get('user/find', id=user_id)
         return False
 
     def user_rooms(self, user_id, shard=DEFAULT_SHARD):
         return self.get('user/rooms', id=user_id, shard=shard)
-
-    def stats(self, user_id, interval=8):
-        return self.get('user/stats', id=user_id, interval=interval)
 
     def set_user_email(self, email):
         return self.post('user/email', email=email)
@@ -192,12 +199,6 @@ class API(object):
     def room_overview(self, room, interval=8, shard=DEFAULT_SHARD):
         return self.get('game/room-overview', interval=interval, room=room, shard=shard)
 
-    def room_objects(self, room, shard=DEFAULT_SHARD):
-        return self.get('game/room-objects', room=room, shard=shard)
-
-    def room_decorations(self, room, shard=DEFAULT_SHARD):
-        return self.get('game/room-decorations', room=room, shard=shard)
-
     def room_terrain(self, room, encoded=False, shard=DEFAULT_SHARD):
         if encoded:
             return self.get('game/room-terrain', room=room, shard=shard, encoded=('1' if encoded else None))
@@ -206,6 +207,12 @@ class API(object):
 
     def room_status(self, room, shard=DEFAULT_SHARD):
         return self.get('game/room-status', room=room, shard=shard)
+
+    def room_objects(self, room, shard=DEFAULT_SHARD):
+        return self.get('game/room-objects', room=room, shard=shard)
+
+    def room_decorations(self, room, shard=DEFAULT_SHARD):
+        return self.get('game/room-decorations', room=room, shard=shard)
 
 
     #### market info methods
@@ -303,8 +310,8 @@ class API(object):
     def create_invader(self, x, y, size, type, boosted=False, shard=DEFAULT_SHARD):
         return self.post('game/create-invader', x=x, y=y, size=size, type=type, boosted=boosted, shard=shard)
 
-    def remove_invader(self, x, y, size, type, boosted=False, shard=DEFAULT_SHARD):
-        return self.post('game/remove-invader', x=x, y=y, size=size, type=type, boosted=boosted, shard=shard)
+    def remove_invader(self, _id, shard=DEFAULT_SHARD):
+        return self.post('game/remove-invader', _id=_id, shard=shard)
 
 
     #### battle info methods
@@ -314,6 +321,12 @@ class API(object):
 
     def nukes(self):
         return self.get('experimental/nukes')
+
+    
+    #### season methods
+
+    def scoreboard(self, limit=20, offset=0):
+        return self.get('scoreboard/list', limit=limit, offset=offset)
 
 
     #### decoration methods
@@ -341,6 +354,12 @@ class API(object):
 
     #### other methods
 
+    def servers_list(self):
+        return self.post('servers/list')
+    
+    def version(self):
+        return self.get('version')
+
     def time(self, shard=DEFAULT_SHARD):
         return self.get('game/time', shard=shard)['time']
 
@@ -357,7 +376,12 @@ class API(object):
         return self.get('user/world-start-room', shard=shard)
 
     def history(self, room, tick, shard=DEFAULT_SHARD):
-        return self.get('../room-history/%s/%s/%s.json' % (shard, room, tick - (tick % 20)))
+        if self.host == OFFICIAL_HOST:
+            tick -= (tick % OFFICIAL_HISTORY_INTERVAL)
+            return self.get('../room-history/%s/%s/%s.json' % (shard, room, tick))
+        else:
+            tick -= (tick % PRIVATE_HISTORY_INTERVAL)
+            return self.get('../room-history', room=room, time=tick)
 
     def get_shards(self):
         try:
@@ -373,13 +397,14 @@ class API(object):
         return self.get('game/shards/info')
 
     def activate_ptr(self):
-        if self.ptr:
+        if self.prefix == PTR_PREFIX:
             return self.post('user/activate-ptr')
 
 
 class Socket(object):
 
-    def __init__(self, user=None, password=None, logging=False, host=None, prefix=None, secure=True, token=None):
+    def __init__(self, user=None, password=None, logging=False, host=None, prefix=None, secure=True, token=None, ptr=False):
+        prefix = PTR_PREFIX if ptr else prefix
         self.settings = {}
         self.user = user
         self.password = password
@@ -486,8 +511,7 @@ class Socket(object):
             host=self.host,
             prefix=self.prefix,
             secure=self.secure,
-            token=self.atoken
-        )
+            token=self.atoken)
         me = screepsConnection.me()
         self.user_id = me['_id']
         self.token = screepsConnection.token
@@ -499,8 +523,10 @@ class Socket(object):
             logging.getLogger('websocket').addHandler(logging.NullHandler())
             websocket.enableTrace(False)
 
+        prefix = PTR_PREFIX if ptr else prefix
+
         url = 'wss://' if self.secure else 'ws://'
-        url += self.host if self.host else 'screeps.com'
+        url += self.host if self.host else OFFICIAL_HOST
         url += self.prefix if self.prefix else ''
         url += '/socket/websocket'
 
@@ -509,8 +535,7 @@ class Socket(object):
             on_message=lambda ws, message: self.on_message(ws,message),
             on_error=lambda ws, error: self.on_error(ws,error),
             on_close=lambda ws: self.on_close(ws),
-            on_open=lambda ws: self.on_open(ws)
-        )
+            on_open=lambda ws: self.on_open(ws))
 
         ssl_defaults = ssl.get_default_verify_paths()
         sslopt_ca_certs = {'ca_certs': ssl_defaults.cafile}
