@@ -12,7 +12,7 @@ Simply install the Python `screepsapi` library using `pip`.
 
 ### Authentication
 
-The recommended way to authenticate to the official servers is providing your [Authorization Token](https://docs.screeps.com/auth-tokens.html) into the `token` parameter.
+The recommended way to authenticate to the official servers is providing an [Authorization Token](https://docs.screeps.com/auth-tokens.html) in the `token` parameter.
 
 ```python
 import screepsapi
@@ -20,7 +20,7 @@ TOKEN = "3bdd1da7-3002-4aaa-be91-330562f54093"
 api = screepsapi.API(token=TOKEN)
 ```
 
-An optional `prefix` parameter can be included with values such as `"/ptr"` for the Public Test Realm or `"/season"` for Seasonal Server.
+An optional `prefix` parameter can be included with values such as `"/ptr"` for the public test realm or `"/season"` for seasonal server.
 
 It is also possible to access private servers with the `host` and `secure` parameters.
 
@@ -33,6 +33,10 @@ api = screepsapi.API(USER, PASSWORD, host=HOST, secure=True)
 ```
 
 Note that by default private servers do not use SSL and all traffic is unencrypted.
+
+### Credentials
+
+Developers are encouraged to align with [SS3: Unified Credentials File v1.0](https://github.com/screepers/screepers-standards/blob/master/SS3-Unified_Credentials_File.md) to standardize Screeps credentials storage with other third party tools.
 
 ### API
 
@@ -68,7 +72,3 @@ print user["user"]["gcl"]
 Screeps provides a sizable amount of data over a websocket. This includes console data and room details.
 
 The best way to utilize the socket is to extend `screepsapi.Socket` and override the various abstract functions.
-
-## Credentials
-
-App developers are encouraged to align with [SS3: Unified Credentials File v1.0](https://github.com/screepers/screepers-standards/blob/master/SS3-Unified_Credentials_File.md) to standardize Screeps credentials storage with other third party tools.
