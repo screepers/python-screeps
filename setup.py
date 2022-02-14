@@ -8,20 +8,20 @@ except(IOError, ImportError):
     long_description = open('README.md').read()
 
 
-version = '0.5.1'
+version = '0.5.2'
 setup(
   name = 'screepsapi',
   version = version,
   packages=find_packages(),
 
-  description = 'Screeps Unofficial Client for the Unofficial API',
+  description = 'Unofficial client for the Screeps Unofficial API',
   long_description=long_description,
   python_requires='>=2',
 
   author = 'Robert Hafner, dzhu',
   author_email = 'tedivm@tedivm.com',
-  url = 'https://github.com/screepers/screeps-api',
-  download_url = "https://github.com/screepers/screeps-api/archive/v%s.tar.gz" % (version),
+  url = 'https://github.com/screepers/python-screeps',
+  download_url = "https://github.com/screepers/python-screeps/archive/v%s.tar.gz" % (version),
   keywords = 'screeps api',
 
   classifiers = [
