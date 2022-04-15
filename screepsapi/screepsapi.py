@@ -236,7 +236,7 @@ class API(object):
     def board_list(self, limit=10, offset=0, season=None, mode='world'):
         if season is None:
             ## find current season (the one with max start time among all seasons)
-            seasons = self.board_seasons['seasons']
+            seasons = self.board_seasons()['seasons']
             season = max(seasons, key=lambda s: s['date'])['_id']
 
         ret = self.get('leaderboard/list', limit=limit, offset=offset, mode=mode, season=season)
