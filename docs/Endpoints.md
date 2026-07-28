@@ -334,9 +334,9 @@ are the ones listed below.
 
 - [POST] `https://screeps.com/api/game/map-stats`
     - post data: `{ rooms: [ <room name> ], statName: "..."}`
-    - statName can be "owner0", "claim0", or a stat (see the enumeration above) followed by an interval
-    - if it is owner0 or claim0, there's no separate stat block in the response
-    - response: `{ ok, stats: { <room name>: { status, novice, own: { user, level }, <stat>: [ { user, value } ] } }, users: { <user's _id>: { _id, username, badge: { type, color1, color2, color3, param, flip } } } }`
+    - statName can be "owner0", "claim0", "sign0", or a stat (see the enumeration above) followed by an interval
+    - if it is owner0. claim0 or sign0, there's no separate stat block in the response
+    - response: `{ ok, stats: { <room name>: { status, novice, own: { user, level }, sign: { datetime, text, time, user }, decorations: [{_id, activatedAt, active: {}, createdAt, decoration, user}], <stat>: [ { user, value } ] } }, users: { <user's _id>: { _id, username, badge: { type, color1, color2, color3, param, flip } } } }`
     - `status` and `novice` are as per the `room-status` call
     - `level` can be 0 to indicate a reserved room
 
