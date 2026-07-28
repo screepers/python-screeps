@@ -523,8 +523,6 @@ class Socket(object):
             logging.getLogger('websocket').addHandler(logging.NullHandler())
             websocket.enableTrace(False)
 
-        prefix = PTR_PREFIX if ptr else prefix
-
         url = 'wss://' if self.secure else 'ws://'
         url += self.host if self.host else OFFICIAL_HOST
         url += self.prefix if self.prefix else ''
